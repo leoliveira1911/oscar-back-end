@@ -8,6 +8,11 @@ const PORT = 3002;
 app.use(cors());
 app.use(express.json());
 
+//teste vercel
+app.get('/', (req, res) => {
+  res.send('Funcionando OK')
+})
+
 
 // Route to get all tasks
 app.get("/api/get", (req, res) => {
