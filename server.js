@@ -9,13 +9,13 @@ app.use(cors());
 app.use(express.json());
 
 //teste vercel
-// app.get('/', (req, res) => {
-//   res.send('Funcionando OK')
-// })
+app.get('/', (req, res) => {
+  res.send('Funcionando OK')
+})
 
 
 // Route to get all tasks
-app.get("/", (req, res) => {
+app.get("/api/get", (req, res) => {
   console.log('função getVotes')
   console.log('user: ')
   const user = req.query.user
