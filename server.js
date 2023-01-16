@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
   console.log(user)
   db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
     if (err) {
-      console.log(err);
+      res.send(err);
     }
     console.log('Função getVotes result:')
     console.log(result);
