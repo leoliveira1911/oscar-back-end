@@ -8,14 +8,17 @@ const PORT = 3002;
 app.use(cors());
 app.use(express.json());
 
+const answer = { "Melhor Ator": 'Leonardo di Caprio', "Melhor Filme": 'Titanic', "Melhor Canção Original": 'Música4', "Melhor Efeitos Visuais": 'Música4', "Melhor Direção": 'Titanic' }
+
+
 //teste vercel
 app.get('/', (req, res) => {
   res.send('Funcionando OK')
 })
 
 
-// Route to get all tasks
-app.get("/api/get", (req, res) => {
+// Route to get all votes OF ONE USER!
+app.get("/api/getVotes", (req, res) => {
   console.log('função getVotes')
   console.log('user: ')
   const user = req.query.user
@@ -30,7 +33,7 @@ app.get("/api/get", (req, res) => {
   });
 });
 
-// Route for creating the task
+// Route for creating the vote
 app.post("/api/create", (req, res) => {
   const user = req.body.user;
   const category = req.body.category;
@@ -86,44 +89,57 @@ app.post("/api/create", (req, res) => {
   });
 
 });
+//RANKING:
 
-// //Route to update a post
-// app.post("/api/update", (req, res) => {
-//   const id = req.body.id;
-//   const name = req.body.name;
-//   const description = req.body.description;
-//   const deadline = req.body.deadline;
-//   const concluded = req.body.concluded;
+//get all the  votes:
+async function getAllTheVotes() {
+  return new Promise(resolve => {
 
-//   console.log(name, description, deadline, concluded);
+    db.query(`SELECT * FROM votes`, (err, result) => {
+      if (err) {
+        return err;
+      }
+      resolve(result);
+    })
+  })
 
-//   db.query(
-//     `UPDATE tasks
-//     set name = ?,description = ?, deadline = ?, concluded=?
-//     WHERE id = ?`,
-//     [name, description, deadline, concluded, id],
-//     (err, result) => {
-//       if (err) {
-//         console.log(err);
-//       }
-//       console.log(result);
-//       res.status(200).send("OK");
-//     }
-//   );
-// });
+}
 
-// Route to delete a post
+function countCorrectVotes(votes, answer) {
+  return Object.values(votes.reduce((acc, vote) => {
+    const user = vote.user
+    const category = vote.category
+    const nominee = vote.nominee
 
-// app.delete("/api/delete/:id", (req, res) => {
-//   const id = req.params.id;
-//   console.log("O ID É:" + id);
-//   db.query(`DELETE FROM tasks WHERE id=?`, id, (err, result) => {
-//     if (err) {
-//       console.log(err);
-//     }
-//     res.status(200).send("OK");
-//   });
-// });
+    if (acc[user]) {
+      const correct = answer[category] === nominee ? acc[user].correct + 1 : acc[user].correct
+      acc[user] = { user: user, correct }
+      return acc
+    } else {
+      const correct = answer[category] === nominee ? 1 : 0
+      acc[user] = { user: user, correct }
+      console.log(acc)
+      return acc
+    }
+  }, {}))
+}
+
+function orderVotes(votes) {
+
+  const desc = (o1, o2) => o2.correct - o1.correct
+  return votes.sort(desc)
+}
+
+
+
+
+app.get("/api/getRanking", (req, res) => {
+  getAllTheVotes()
+    .then(votes => countCorrectVotes(votes, answer))
+    .then(countedVotes => orderVotes(countedVotes))
+    .then(orderVotes => res.send(orderVotes))
+
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
