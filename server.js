@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 
 const PORT = 3002;
-app.use(cors());
+//app.use(cors());
 app.use(express.json());
 
 const answer = { "Melhor Ator": 'Leonardo di Caprio', "Melhor Filme": 'Titanic', "Melhor Canção Original": 'Música4', "Melhor Efeitos Visuais": 'Música4', "Melhor Direção": 'Titanic' }
