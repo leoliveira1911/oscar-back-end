@@ -16,6 +16,14 @@ app.get('/', (req, res) => {
   res.send('Funcionando OK')
 })
 
+//Fixing CORS
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'https://oscar-five.vercel.app/');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 // Route to get all votes OF ONE USER!
 app.get("/api/getVotes", (req, res) => {
