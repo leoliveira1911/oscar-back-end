@@ -47,6 +47,8 @@ app.post("/api/create", (req, res) => {
   const user = req.body.user;
   const category = req.body.category;
   const nominee = req.body.nominee;
+  const img = req.body.img
+  const userName = req.body.userName
 
   console.log('função save: req.body:')
   console.log(req.body)
@@ -64,7 +66,7 @@ app.post("/api/create", (req, res) => {
           test = true
           db.query(
             `UPDATE votes
-    set user = ?,category = ?, nominee = ? WHERE id = ?`,
+    set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
             [user, category, nominee, el.id],
             (err, result) => {
               if (err) {
@@ -78,8 +80,8 @@ app.post("/api/create", (req, res) => {
       })
     } if (test === false) {
       db.query(
-        `INSERT INTO votes (user, category, nominee) VALUES (?,?,?)`,
-        [user, category, nominee],
+        `INSERT INTO votes (user, category, nominee, img, userName) VALUES (?,?,?,?,?)`,
+        [user, category, nominee, img, userName],
         (err, result) => {
           if (err) {
             console.log(err);
