@@ -47,13 +47,13 @@ app.post("/api/create", (req, res) => {
   const user = req.body.user;
   const category = req.body.category;
   const nominee = req.body.nominee;
-  const img = req.body.img
+  const img = req.body.imgUrl
   const userName = req.body.userName
 
   console.log('função save: req.body:')
   console.log(req.body)
   console.log('função save: user, category, nominee: ')
-  console.log(user, category, nominee);
+  console.log(user, category, nominee, img, userName);
 
   db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
     let test = false
