@@ -5,8 +5,8 @@ const cors = require("cors");
 const app = express();
 
 const PORT = 3002;
-app.use(cors(corsOptions));
-app.use(express.json());
+app.use(cors());
+//app.use(express.json());
 
 const answer = { "Melhor Ator": 'Leonardo di Caprio', "Melhor Filme": 'Titanic', "Melhor Canção Original": 'Música4', "Melhor Efeitos Visuais": 'Música4', "Melhor Direção": 'Titanic' }
 
@@ -17,12 +17,6 @@ app.get('/', (req, res) => {
 })
 
 //Fixing CORS
-
-var corsOptions = {
-  origin: '*',
-  optionsSuccessStatus: 200
-}
-
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
