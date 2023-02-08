@@ -11,7 +11,7 @@ app.use(express.json());
 const answer = { "Melhor Ator": 'Leonardo di Caprio', "Melhor Filme": 'Titanic', "Melhor Canção Original": 'Música4', "Melhor Efeitos Visuais": 'Música4', "Melhor Direção": 'Titanic' }
 
 
-//teste vercel
+//teste 
 app.get('/', (req, res) => {
   res.send('Funcionando OK')
 })
