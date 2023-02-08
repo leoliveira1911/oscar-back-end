@@ -118,7 +118,7 @@ async function getAllTheVotes() {
 
 function countCorrectVotes(votes, answer) {
   return Object.values(votes.reduce((acc, vote) => {
-    const user = vote.user
+    const user = vote.userName
     const category = vote.category
     const nominee = vote.nominee
 
