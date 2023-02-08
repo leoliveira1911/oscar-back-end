@@ -67,7 +67,7 @@ app.post("/api/create", (req, res) => {
           db.query(
             `UPDATE votes
     set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
-            [user, category, nominee, el.id],
+            [user, category, nominee, img, userName, el.id],
             (err, result) => {
               if (err) {
                 console.log(err);
