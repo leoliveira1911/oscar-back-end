@@ -72,6 +72,7 @@ app.post("/api/create", (req, res) => {
     }
   })
 
+  //if validation = true > make the vote.
   if (validation === true) {
 
     db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
@@ -117,6 +118,8 @@ app.post("/api/create", (req, res) => {
       //console.log(result);
       // res.send(result);
     });
+  } else {
+    res.send('VOTO INVÁLIDO')
   }
 
 
