@@ -8,6 +8,8 @@ const PORT = 3002;
 app.use(cors());
 app.use(express.json());
 
+const oscar = require('./new_oscar.json')
+
 const answer = { "Melhor Ator": 'Leonardo di Caprio', "Melhor Filme": 'Titanic', "Melhor Canção Original": 'Música4', "Melhor Efeitos Visuais": 'Música4', "Melhor Direção": 'Titanic' }
 
 
@@ -50,54 +52,74 @@ app.post("/api/create", (req, res) => {
   const img = req.body.imgUrl
   const userName = req.body.userName
 
+
+
   console.log('função save: req.body:')
   console.log(req.body)
   console.log('função save: user, category, nominee: ')
   console.log(user, category, nominee, img, userName);
 
-  db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
-    let test = false
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Map query results')
-      result.map(el => {
-        if (el.category === category) {
-          test = true
-          db.query(
-            `UPDATE votes
-    set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
-            [user, category, nominee, img, userName, el.id],
-            (err, result) => {
-              if (err) {
-                console.log(err);
-              }
-              console.log(result);
+  //check if it is a valid vote
+  let validation = false
 
-            }
-          );
+  oscar.map(cat => {
+    if (cat.name === category) {
+      cat.nominees.map(nom => {
+        if (nom.title === nominee) {
+          validation = true
         }
       })
-    } if (test === false) {
-      db.query(
-        `INSERT INTO votes (user, category, nominee, img, userName) VALUES (?,?,?,?,?)`,
-        [user, category, nominee, img, userName],
-        (err, result) => {
-          if (err) {
-            console.log(err);
-          }
-
-          console.log('Função Save result:')
-          console.log(result);
-        }
-      );
-
     }
-    res.status(200).send("OK");
-    //console.log('Função getVotes result:')
-    //console.log(result);
-    // res.send(result);
-  });
+  })
+
+  if (validation === true) {
+
+    db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
+      let test = false
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Map query results')
+        result.map(el => {
+          if (el.category === category) {
+            test = true
+            db.query(
+              `UPDATE votes
+      set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
+              [user, category, nominee, img, userName, el.id],
+              (err, result) => {
+                if (err) {
+                  console.log(err);
+                }
+                console.log(result);
+
+              }
+            );
+          }
+        })
+      } if (test === false) {
+        db.query(
+          `INSERT INTO votes (user, category, nominee, img, userName) VALUES (?,?,?,?,?)`,
+          [user, category, nominee, img, userName],
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            }
+
+            console.log('Função Save result:')
+            console.log(result);
+          }
+        );
+
+      }
+      res.status(200).send("OK");
+      //console.log('Função getVotes result:')
+      //console.log(result);
+      // res.send(result);
+    });
+  }
+
+
 
 });
 //RANKING:
