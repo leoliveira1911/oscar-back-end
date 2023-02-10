@@ -119,7 +119,7 @@ app.post("/api/create", (req, res) => {
       // res.send(result);
     });
   } else {
-    res.send('VOTO INVÁLIDO')
+    res.status(404).send('VOTO INVÁLIDO')
   }
 
 
