@@ -44,7 +44,7 @@ app.get("/api/getVotes", (req, res) => {
   });
 });
 
-// Route for creating the vote
+// Route for creating the votes
 app.post("/api/create", (req, res) => {
   const user = req.body.user;
   const category = req.body.category;
