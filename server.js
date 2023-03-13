@@ -10,7 +10,9 @@ app.use(express.json());
 
 const oscar = require('./new_oscar.json')
 
-const answer = { "Melhor Ator": 'Leonardo di Caprio', "Melhor Filme": 'Titanic', "Melhor Canção Original": 'Música4', "Melhor Efeitos Visuais": 'Música4', "Melhor Direção": 'Titanic' }
+const answer = {
+  "Actor in a Leading Role": 'Brendan Fraser', "Actor in a Supporting Role": 'Ke Huy Quan', "Actress in a Leading Role": 'Michelle Yeoh', "Actress in a Supporting Role": 'Jamie Lee Curtis', "Animated Feature Film": "Guillermo del Toro's Pinocchio", "Cinematography": 'All Quiet on the Western Front', "Costume Design": 'Black Panther: Wakanda Forever', "Directing": 'Everything Everywhere All at Once', "Documentary Feature Film": 'Navalny', "Documentary Short Film": 'The Elephant Whisperers', "Film Editing": 'Everything Everywhere All at Once', "International Feature Film": 'All Quiet on the Western Front', "Makeup and Hairstyling": 'The Whale', "Music (Original Score)": 'All Quiet on the Western Front', "Music (Original Song)": 'Naatu Naatu', "Best Picture": 'Everything Everywhere All at Once', "Production Design": 'All Quiet on the Western Front', "Short Film (Animated)": 'The Boy, the Mole, the Fox and the Horse', "Short Film (Live Action)": 'An Irish Goodbye', "Sound": 'Top Gun: Maverick', "Visual Effects": 'Avatar: The Way of Water', "Writing (Adapted Screenplay)": 'Women Talking', "Writing (Original Screenplay)": 'Everything Everywhere All at Once'
+}
 
 
 //teste 
