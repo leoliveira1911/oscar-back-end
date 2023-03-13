@@ -35,6 +35,14 @@ app.get("/api/getVotes", (req, res) => {
   const user = req.query.user
   console.log(user)
   db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
+    // select cat.category nom.nominee nom.img nom.label from 
+    // category as cat join new_votes as nv 
+    // on cat.id = nv.category_id
+    //join nominee as nom 
+    //on nom.id = nv.nominee_id
+    //join user as us
+    //on us.id = nv.user_id
+    //where us.token = `${user}`
     if (err) {
       res.send(err);
     }
@@ -45,86 +53,89 @@ app.get("/api/getVotes", (req, res) => {
 });
 
 // Route for creating the votes
-app.post("/api/create", (req, res) => {
-  const user = req.body.user;
-  const category = req.body.category;
-  const nominee = req.body.nominee;
-  const img = req.body.imgUrl
-  const userName = req.body.userName
+
+// app.post("/api/create", (req, res) => {
+//   const user = req.body.user;
+//   const category = req.body.category;
+//   const nominee = req.body.nominee;
+//   const img = req.body.imgUrl
+//   const userName = req.body.userName
 
 
 
-  console.log('função save: req.body:')
-  console.log(req.body)
-  console.log('função save: user, category, nominee: ')
-  console.log(user, category, nominee, img, userName);
+//   console.log('função save: req.body:')
+//   console.log(req.body)
+//   console.log('função save: user, category, nominee: ')
+//   console.log(user, category, nominee, img, userName);
 
-  //check if it is a valid vote
-  let validation = false
+//   //check if it is a valid vote
+//   let validation = false
 
-  oscar.map(cat => {
-    if (cat.name === category) {
-      cat.nominees.map(nom => {
-        if (nom.title === nominee) {
-          validation = true
-        }
-      })
-    }
-  })
+//   oscar.map(cat => {
+//     if (cat.name === category) {
+//       cat.nominees.map(nom => {
+//         if (nom.title === nominee) {
+//           validation = true
+//         }
+//       })
+//     }
+//   })
 
-  //if validation = true > make the vote.
-  if (validation === true) {
+//   //if validation = true > make the vote.
+//   if (validation === true) {
 
-    db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
-      let test = false
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Map query results')
-        result.map(el => {
-          if (el.category === category) {
-            test = true
-            db.query(
-              `UPDATE votes
-      set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
-              [user, category, nominee, img, userName, el.id],
-              (err, result) => {
-                if (err) {
-                  console.log(err);
-                }
-                console.log(result);
+//     db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
+//       let test = false
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         console.log('Map query results')
+//         result.map(el => {
+//           if (el.category === category) {
+//             test = true
+//             db.query(
+//               `UPDATE votes
+//       set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
+//               [user, category, nominee, img, userName, el.id],
+//               (err, result) => {
+//                 if (err) {
+//                   console.log(err);
+//                 }
+//                 console.log(result);
 
-              }
-            );
-          }
-        })
-      } if (test === false) {
-        db.query(
-          `INSERT INTO votes (user, category, nominee, img, userName) VALUES (?,?,?,?,?)`,
-          [user, category, nominee, img, userName],
-          (err, result) => {
-            if (err) {
-              console.log(err);
-            }
+//               }
+//             );
+//           }
+//         })
+//       } if (test === false) {
+//         db.query(
+//           `INSERT INTO votes (user, category, nominee, img, userName) VALUES (?,?,?,?,?)`,
+//           [user, category, nominee, img, userName],
+//           (err, result) => {
+//             if (err) {
+//               console.log(err);
+//             }
 
-            console.log('Função Save result:')
-            console.log(result);
-          }
-        );
+//             console.log('Função Save result:')
+//             console.log(result);
+//           }
+//         );
 
-      }
-      res.status(200).send("OK");
-      //console.log('Função getVotes result:')
-      //console.log(result);
-      // res.send(result);
-    });
-  } else {
-    res.status(404).send('VOTO INVÁLIDO')
-  }
+//       }
+//       res.status(200).send("OK");
+//       //console.log('Função getVotes result:')
+//       //console.log(result);
+//       // res.send(result);
+//     });
+//   } else {
+//     res.status(404).send('VOTO INVÁLIDO')
+//   }
 
 
 
-});
+// });
+
+
 //RANKING:
 
 //get all the  votes:
