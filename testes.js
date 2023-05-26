@@ -1,14 +1,23 @@
 const oscar = require("./new_oscar.json");
-const db = require("./db")
+const db = require("./db");
 
-const categories = oscar.map(category => {
-    return category.name
-})
+const nominees = oscar.flatMap((category) => {
+  return category.nominees.map((nominee) => {
+    return nominee.title;
+  });
+});
 
-const insertingCategories = () => categories.forEach(category => {
-    return db.query(`INSERT INTO category (category) VALUES ('${category}')`)
-})
+const uniqueNominees = [...new Set(nominees)];
 
+console.log(uniqueNominees);
+console.log(uniqueNominees.length);
+const insertingNominees = () =>
+  uniqueNominees.forEach((nominee) => {
+    return db.query(
+      `INSERT INTO nominees (nominee) 
+       VALUES("${nominee}")`
+    );
+  });
 
-insertingCategories()
-
+insertingNominees();
+// console.log(db.query("SELECT * FROM nominees"));

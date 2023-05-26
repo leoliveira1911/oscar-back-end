@@ -16,9 +16,9 @@ const answer = {
   "Actress in a Leading Role": "Michelle Yeoh",
   "Actress in a Supporting Role": "Jamie Lee Curtis",
   "Animated Feature Film": "Guillermo del Toro's Pinocchio",
-  "Cinematography": "All Quiet on the Western Front",
+  Cinematography: "All Quiet on the Western Front",
   "Costume Design": "Black Panther: Wakanda Forever",
-  "Directing": "Everything Everywhere All at Once",
+  Directing: "Everything Everywhere All at Once",
   "Documentary Feature Film": "Navalny",
   "Documentary Short Film": "The Elephant Whisperers",
   "Film Editing": "Everything Everywhere All at Once",
@@ -30,7 +30,7 @@ const answer = {
   "Production Design": "All Quiet on the Western Front",
   "Short Film (Animated)": "The Boy, the Mole, the Fox and the Horse",
   "Short Film (Live Action)": "An Irish Goodbye",
-  "Sound": "Top Gun: Maverick",
+  Sound: "Top Gun: Maverick",
   "Visual Effects": "Avatar: The Way of Water",
   "Writing (Adapted Screenplay)": "Women Talking",
   "Writing (Original Screenplay)": "Everything Everywhere All at Once",
@@ -50,6 +50,16 @@ app.get("/", (req, res) => {
 
 //   next();
 // });
+//ADD USER TO DB
+app.post("/addUser", (req, res) => {
+  const userUID = req.body.userUID;
+  const userDisplayName = req.body.userDisplayName;
+  console.log(userDisplayName, userUID);
+  db.query(
+    `insert into users (name , token) values ('${userDisplayName}', '${userUID}')`
+  );
+  res.send("funcionando OK");
+});
 
 // Route to get all votes OF ONE USER!
 app.get("/api/getVotes", (req, res) => {
@@ -68,82 +78,62 @@ app.get("/api/getVotes", (req, res) => {
 });
 
 // Route for creating the vote
-// app.post("/api/create", (req, res) => {
-//   const user = req.body.user;
-//   const category = req.body.category;
-//   const nominee = req.body.nominee;
-//   const img = req.body.imgUrl
-//   const userName = req.body.userName
+app.post("/create", (req, res) => {
+  const user = req.body.user;
+  const category = req.body.category;
+  const nominee = req.body.nominee;
 
-//   console.log('função save: req.body:')
-//   console.log(req.body)
-//   console.log('função save: user, category, nominee: ')
-//   console.log(user, category, nominee, img, userName);
+  console.log("função save: req.body:");
+  console.log(req.body);
+  console.log("função save: user, category, nominee: ");
+  console.log(user, category, nominee);
 
-//   //check if it is a valid vote
-//   let validation = false
+  //check if it is a valid vote
+  let validation = false;
 
-//   oscar.map(cat => {
-//     if (cat.name === category) {
-//       cat.nominees.map(nom => {
-//         if (nom.title === nominee) {
-//           validation = true
-//         }
-//       })
-//     }
-//   })
+  oscar.map((cat) => {
+    if (cat.name === category) {
+      cat.nominees.map((nom) => {
+        if (nom.title === nominee) {
+          validation = true;
+        }
+      });
+    }
+  });
 
-//   //if validation = true > make the vote.
-//   if (validation === true) {
+  //if validation = true > make the vote.
+  if (validation === true) {
+    db.query(
+      `
+     INSERT INTO new_votes (user_id, category_id, nominee_id, dataHora) 
+             select a.id, b.id, c.id , now()
+          from users a
+          inner join nominees b
+          on nominee = '${nominee}'
+          inner join category c
+          on  category = '${category}'
+          where a.token = '${user}';
+          ;
+          `,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
 
-//     db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
-//       let test = false
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         console.log('Map query results')
-//         result.map(el => {
-//           if (el.category === category) {
-//             test = true
-//             db.query(
-//               `UPDATE votes
-//       set user = ?,category = ?, nominee = ?, img = ?, userName = ? WHERE id = ?`,
-//               [user, category, nominee, img, userName, el.id],
-//               (err, result) => {
-//                 if (err) {
-//                   console.log(err);
-//                 }
-//                 console.log(result);
+        console.log("Função Save result:");
+        console.log(result);
+      }
+    );
 
-//               }
-//             );
-//           }
-//         })
-//       } if (test === false) {
-//         db.query(
-//           `INSERT INTO votes (user, category, nominee, img, userName) VALUES (?,?,?,?,?)`,
-//           [user, category, nominee, img, userName],
-//           (err, result) => {
-//             if (err) {
-//               console.log(err);
-//             }
+    res.status(200).send("OK");
+    //console.log('Função getVotes result:')
+    //console.log(result);
+    // res.send(result);
+  } else {
+    res.status(404).send("VOTO INVÁLIDO");
+  }
+});
 
-//             console.log('Função Save result:')
-//             console.log(result);
-//           }
-//         );
-
-//       }
-//       res.status(200).send("OK");
-//       //console.log('Função getVotes result:')
-//       //console.log(result);
-//       // res.send(result);
-//     });
-//   } else {
-//     res.status(404).send('VOTO INVÁLIDO')
-//   }
-
-// });
 //RANKING:
 
 //get all the  votes:
