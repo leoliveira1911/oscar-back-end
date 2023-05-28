@@ -36,6 +36,51 @@ const answer = {
   "Writing (Original Screenplay)": "Everything Everywhere All at Once",
 };
 
+function getMostRecentVotes(votes) {
+  const categories = {};
+
+  for (const vote of votes) {
+    const category = vote.category;
+
+    if (
+      !categories[category] ||
+      categories[category].dataHora < vote.dataHora
+    ) {
+      categories[category] = vote;
+    }
+  }
+
+  return Object.values(categories);
+}
+
+function getMostRecentVotesByPerson(votes) {
+  const votesByPerson = {};
+
+  for (const vote of votes) {
+    const person = vote.name;
+    const category = vote.category;
+
+    if (!votesByPerson[person]) {
+      votesByPerson[person] = {};
+    }
+
+    if (
+      !votesByPerson[person][category] ||
+      votesByPerson[person][category].dataHora < vote.dataHora
+    ) {
+      votesByPerson[person][category] = vote;
+    }
+  }
+
+  const mostRecentVotes = [];
+
+  for (const person in votesByPerson) {
+    const personVotes = Object.values(votesByPerson[person]);
+    mostRecentVotes.push(...personVotes);
+  }
+  return mostRecentVotes;
+}
+
 //teste
 app.get("/", (req, res) => {
   res.send("Funcionando OK");
@@ -62,19 +107,37 @@ app.post("/addUser", (req, res) => {
 });
 
 // Route to get all votes OF ONE USER!
-app.get("/api/getVotes", (req, res) => {
+app.get("/getVotes", (req, res) => {
   console.log("função getVotes");
   console.log("user: ");
   const user = req.query.user;
   console.log(user);
-  db.query(`SELECT * FROM votes where user = '${user}'`, (err, result) => {
-    if (err) {
-      res.send(err);
+  db.query(
+    `
+  select a.name , b.nominee, b.img , c.category , d.dataHora
+from new_votes d
+inner join users a
+on a.id = d.user_id
+inner join nominees b
+on b.id = d.nominee_id
+inner join category c
+on c.id=d.category_id
+where a.token = '${user}'
+order by dataHora;
+  `,
+    (err, result) => {
+      if (err) {
+        res.send(err);
+      }
+      console.log("Função getVotes result:");
+      //console.log(result);
+
+      const votes = getMostRecentVotes(result);
+
+      console.log(votes);
+      res.send(votes);
     }
-    console.log("Função getVotes result:");
-    console.log(result);
-    res.send(result);
-  });
+  );
 });
 
 // Route for creating the vote
@@ -105,8 +168,8 @@ app.post("/create", (req, res) => {
   if (validation === true) {
     db.query(
       `
-     INSERT INTO new_votes (user_id, category_id, nominee_id, dataHora) 
-             select a.id, b.id, c.id , now()
+     INSERT INTO new_votes (user_id, nominee_id, category_id, dataHora) 
+             select a.id, b.id, c.id , '${Date.now()}'
           from users a
           inner join nominees b
           on nominee = '${nominee}'
@@ -139,19 +202,32 @@ app.post("/create", (req, res) => {
 //get all the  votes:
 async function getAllTheVotes() {
   return new Promise((resolve) => {
-    db.query(`SELECT * FROM votes`, (err, result) => {
-      if (err) {
-        return err;
+    db.query(
+      `select a.name , b.nominee, b.img , c.category , d.dataHora
+    from new_votes d
+    inner join users a
+    on a.id = d.user_id
+    inner join nominees b
+    on b.id = d.nominee_id
+    inner join category c
+    on c.id=d.category_id
+    order by dataHora;`,
+      (err, result) => {
+        if (err) {
+          return err;
+        }
+        const votes = getMostRecentVotesByPerson(result);
+        console.log("Votos De cada participante:", votes);
+        resolve(votes);
       }
-      resolve(result);
-    });
+    );
   });
 }
 
 function countCorrectVotes(votes, answer) {
   return Object.values(
     votes.reduce((acc, vote) => {
-      const user = vote.userName;
+      const user = vote.name;
       const category = vote.category;
       const nominee = vote.nominee;
 
@@ -177,7 +253,7 @@ function orderVotes(votes) {
   return votes.sort(desc);
 }
 
-app.get("/api/getRanking", (req, res) => {
+app.get("/getRanking", (req, res) => {
   getAllTheVotes()
     .then((votes) => countCorrectVotes(votes, answer))
     .then((countedVotes) => orderVotes(countedVotes))
